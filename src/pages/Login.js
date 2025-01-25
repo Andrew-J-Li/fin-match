@@ -6,6 +6,7 @@ function Login() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [name, setName] = useState(""); // New state for name
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -23,7 +24,7 @@ function Login() {
       alert("Passwords do not match!");
       return;
     }
-    console.log({ username, password });
+    console.log({ name, username, password }); // Log name along with other fields
     navigate("/dashboard");
   };
 
@@ -132,9 +133,7 @@ function Login() {
     <div style={containerStyle}>
       <div style={cardStyle}>
         <h1 style={titleStyle}>
-          {isLogin ? ("Login") : (
-            "Register"
-          )}
+          {isLogin ? "Login" : "Register"}
         </h1>
         <p style={subtitleStyle}>
           {isLogin
@@ -143,13 +142,28 @@ function Login() {
         </p>
 
         <form onSubmit={handleSubmit}>
+          {!isLogin && (
+            <div>
+              <label htmlFor="name" style={{ display: "none" }}>Name</label>
+              <input
+                type="text"
+                id="name"
+                value={name}
+                placeholder="Full Name"
+                onChange={(e) => setName(e.target.value)}
+                required
+                style={inputStyle}
+              />
+            </div>
+          )}
+
           <div>
             <label htmlFor="username" style={{ display: "none" }}>Username</label>
             <input
               type="text"
               id="username"
               value={username}
-              placeholder="Email or Username"
+              placeholder="Email"
               onChange={(e) => setUsername(e.target.value)}
               required
               style={inputStyle}
@@ -219,12 +233,6 @@ function Login() {
             </p>
           )}
         </div>
-
-        {/* <div style={socialContainerStyle}>
-          <div style={socialIconStyle}>F</div>
-          <div style={socialIconStyle}>G</div>
-          <div style={socialIconStyle}>T</div>
-        </div> */}
       </div>
     </div>
   );
