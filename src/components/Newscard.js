@@ -9,7 +9,7 @@ const BottomInfo = ({ ticker, change }) => {
   const color = getColor(Math.abs(change));
 
   return (
-    <div style={{ display: 'flex', alignItems: 'center', gap: '5px', backgroundColor: '#f5f5f5', padding: '5px 10px', borderRadius: '5px' }}>
+    <div style={{ display: 'flex', alignItems: 'center', gap: '5px', backgroundColor: '#f5f5f5', padding: '5px 10px', borderRadius: '20px' }}>
       <span style={{ fontWeight: 'bold', fontSize: '14px' }}>{ticker}</span>
       <div
         style={{
@@ -33,13 +33,16 @@ const BottomInfo = ({ ticker, change }) => {
 
 const FinanceCard = () => {
   return (
-    <div style={{ height: 'fit-content', width: '350px', borderRadius: '15px', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)', backgroundColor: 'white', overflow: 'hidden', margin: '10px' }}>
-      <div style={{ padding: '15px' }}>
-        <img
+    <div style={{ height: 'fit-content', borderRadius: '15px', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)', backgroundColor: 'white', overflow: 'hidden', margin: '10px' }}>
+        <div style={{ position: 'relative' }}>
+            <img
           src={require("../assets/finadvisor.png")}
           alt="President"
-          style={{ width: '100%', height: '150px', objectFit: 'cover' }}
+          style={{ width: '100%', height: '200px', objectFit: 'cover' }}
         />
+        </div>
+    
+      <div style={{ padding: '15px' }}>
         <h2 style={{ fontWeight: '600', fontSize: '18px', marginBottom: '10px', marginTop: '10px'}}>
           Canada tariffs would hurt automakers and consumers: Report
         </h2>
@@ -47,8 +50,8 @@ const FinanceCard = () => {
         </p>
         <p style={{ color: '#777', fontSize: '14px', marginBottom: '15px' }}>Yahoo Finance • 34 minutes ago</p>
         <div style={{ display: 'flex', gap: '10px' }}>
-          <BottomInfo ticker="AA" change={3} />
-          <BottomInfo ticker="GM" change={5} />
+          <BottomInfo ticker="AA" change={8} />
+          <BottomInfo ticker="GM" change={1} />
         </div>
       </div>
     </div>
