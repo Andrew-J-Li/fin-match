@@ -1,15 +1,26 @@
-.Home {
-  padding: 20px;
-  background-color: #f9f9f9;
-  text-align: center;
+.title {
+  font-size: 50px;
+  font-weight: bold;
+  margin-bottom: 15px;
+  font-family: 'Inter', sans-serif;
+  padding-top: 50px;
 }
 
-.Home h1 {
-  font-size: 2rem;
-  color: #333;
+.background {
+  margin-left: 15%;
+  margin-right: 15%;
+  background: linear-gradient(to right, rgb(15, 105, 27), rgb(135, 170, 136));
 }
 
-.Home p {
-  font-size: 1.2rem;
-  color: #555;
+.home-text {
+  font-family: 'Recht', sans-serif; /* Assuming the font 'Recht' is properly loaded */
+  font-weight: bold;
+  color: white;
+  font-size: 40px;
+  padding-bottom: 5px;
+  margin-right: 15%;
+  padding-top: 5px;
+  text-align: left; /* Left justify text */
+  line-height: 1.4;
+  margin-left: 5%;
 }
