@@ -132,19 +132,13 @@ function Login() {
     <div style={containerStyle}>
       <div style={cardStyle}>
         <h1 style={titleStyle}>
-          {isLogin ? (
-            <>
-              Welcome to
-              <span style={{ color: "#2A9D8F" }}> Fin</span>
-              <span style={{ color: "#264653" }}>Match</span>
-            </>
-          ) : (
+          {isLogin ? ("Login") : (
             "Register"
           )}
         </h1>
         <p style={subtitleStyle}>
           {isLogin
-            ? "Please sign in to your account and start the adventure."
+            ? "Sign in to your account."
             : "Create your account to get started."}
         </p>
 
