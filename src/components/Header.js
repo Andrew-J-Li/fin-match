@@ -25,8 +25,8 @@ function Header() {
 
       {/* Link styled as a Button (without link styles) */}
       <div>
-        <Link to="/login" style={{ textDecoration: "none" }}>
-          <Button label="Login" onClick={() => console.log("Login clicked")} />
+        <Link to="/login?login" style={{ textDecoration: "none"}}>
+          <Button label="Login" style={{fontSize:"15px"}}/>
         </Link>
       </div>
     </header>

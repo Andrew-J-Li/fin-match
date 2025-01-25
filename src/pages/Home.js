@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from "react-router-dom";
 import Button from '../components/Button';
 import styles from '../styles/Home.css';
 import { Briefcase, Target, UserCheck, MessageSquare } from 'lucide-react';
@@ -53,7 +54,9 @@ const Home = () => (
         <div style={{ color: "white", fontSize: "20px", paddingBottom: "40px", paddingTop: "20px", width: "60%", lineHeight: "30px"}}>
           Revolutionizing the way you invest with seamless AI-matching between prospective investors and financial advisors.
         </div>
-        <Button label="Start Now" style={{fontSize: "20px"}}/>
+        <Link to="/login?register" style={{ textDecoration: "none"}}>
+          <Button label="Start Now" style={{fontSize:"15px"}}/>
+        </Link>
       </div>
 
     </div>
