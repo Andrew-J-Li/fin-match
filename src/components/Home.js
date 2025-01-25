@@ -51,7 +51,7 @@ const Home = () => (
           Unlock Your Investment Potential
         </div>
         <div style={{ color: "white", fontSize: "20px", paddingBottom: "50px", paddingTop: "10px", width: "60%"}}>
-          Revolutionizing the way you invest with seamless AI-matching between prospective investors and financial advisors.
+          Transforming financial advising through cutting-edge AI insights, empowering advisors to make smarter, data-driven decisions.
         </div>
         <Button label="Start Now" />
       </div>
