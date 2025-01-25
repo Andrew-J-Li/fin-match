@@ -25,8 +25,11 @@ function Header() {
 
       {/* Link styled as a Button (without link styles) */}
       <div>
-        <Link to="/login?login" style={{ textDecoration: "none"}}>
+        {/* <Link to="/login?login" style={{ textDecoration: "none"}}>
           <Button label="Login" style={{fontSize:"15px"}}/>
+        </Link> */}
+        <Link to="/dashboard" style={{ textDecoration: "none"}}>
+          <Button label="Dashboard" style={{fontSize:"15px"}}/>
         </Link>
       </div>
     </header>

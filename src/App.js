@@ -4,6 +4,7 @@ import './styles/App.css'; // Global styles
 import Header from './components/Header'; // Import Header component
 import Home from './pages/Home'; // Import the new Home component
 import Login from './pages/Login'; // Import the Login component
+import Dashboard from './pages/Dashboard';
 
 function App() {
   return (
@@ -17,6 +18,7 @@ function App() {
           
           {/* Route for the Login page */}
           <Route path="/login" element={<Login />} />
+          <Route path="/dashboard" element={<Dashboard />} />
         </Routes>
       </div>
     </BrowserRouter>
