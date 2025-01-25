@@ -1,16 +1,16 @@
 import React from 'react';
 
-const Button = ({ label, onClick }) => {
+const Button = ({ label, onClick, style }) => {
   const buttonStyle = {
     backgroundColor: "#2A9D8F",
     color: "white",
     border: "none",
     borderRadius: "5px",
     padding: "10px 20px",
-    fontSize: "20px",
     fontWeight: "bold",
     cursor: "pointer",
     transition: "background-color 0.3s ease",
+    ...style
   };
 
   const handleHover = (e) => {

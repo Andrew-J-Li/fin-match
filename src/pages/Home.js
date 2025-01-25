@@ -1,5 +1,5 @@
 import React from 'react';
-import Button from './Button';
+import Button from '../components/Button';
 import styles from '../styles/Home.css';
 import { Briefcase, Target, UserCheck, MessageSquare } from 'lucide-react';
 
@@ -50,10 +50,10 @@ const Home = () => (
         }}>
           Unlock Your Investment Potential
         </div>
-        <div style={{ color: "white", fontSize: "20px", paddingBottom: "50px", paddingTop: "10px", width: "60%"}}>
-          Transforming financial advising through cutting-edge AI insights, empowering advisors to make smarter, data-driven decisions.
+        <div style={{ color: "white", fontSize: "20px", paddingBottom: "40px", paddingTop: "20px", width: "60%", lineHeight: "30px"}}>
+          Revolutionizing the way you invest with seamless AI-matching between prospective investors and financial advisors.
         </div>
-        <Button label="Start Now" />
+        <Button label="Start Now" style={{fontSize: "20px"}}/>
       </div>
 
     </div>

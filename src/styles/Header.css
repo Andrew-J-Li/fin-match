@@ -1,19 +1,31 @@
 .Header {
   display: flex;
+  flex-direction: row;
   align-items: center;
-  justify-content: space-between; /* Adjust items on the left and right */
-  padding: 15px 30px;  /* Increased padding for better spacing */
-  background-color: #ffffff; /* Clean white background */
-  min-height: 70px;  /* Slightly taller header */
-  height: auto;  /* Allow the header to adjust its height based on content */
-  border-bottom: 3px solid #e0e0e0; /* Soft gray border */
-  position: fixed; /* Fixes the header at the top */
+  justify-content: space-between;
+  /* Ensures logo and button stay on opposite sides */
+  padding: 15px 30px;
+  background-color: #ffffff;
+  min-height: 60px;
+  /* Adequate height for header content */
+  border-bottom: 1px solid #e0e0e0;
+  position: fixed;
   top: 0;
   left: 0;
-  width: 100%;  /* Ensure it spans across the whole screen */
-  z-index: 10;  /* Makes sure the header stays above other content */
+  width: 100%;
+  z-index: 10;
+  box-sizing: border-box;
+  /* Prevent padding from pushing content off-screen */
 }
 
 .Header-logo-link {
-  text-decoration: none; /* Removes underline */
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+}
+
+.Header button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
