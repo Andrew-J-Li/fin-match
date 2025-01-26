@@ -42,10 +42,10 @@ function Login() {
         return response.json(); // Parse the response JSON
       })
       .then((data) => {
-        console.log("Login successful:", data.advisor_id);
+        console.log("Login successful:", data);
         // Redirect or perform other actions on success
         navigate(
-          `/dashboard?name=${encodeURIComponent(data.advisor_id)}`
+          `/dashboard?${encodeURIComponent(data.advisor.advisor_id)}`
         );
       })
       .catch((error) => {
