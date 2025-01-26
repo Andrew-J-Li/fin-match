@@ -3,7 +3,21 @@ import { Box, Typography, Card, CardContent } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
 import { XAxis, YAxis, CartesianGrid, Tooltip, BarChart, Bar, PieChart, Pie, Cell, Legend } from "recharts";
 
+const parseQuery = (queryString) => {
+    const params = new URLSearchParams(queryString);
+    const entries = Array.from(params.entries());
+    const result = {};
+    entries.forEach(([key, value]) => {
+        result[key] = decodeURIComponent(value);
+    });
+    return result;
+};
+
 const Portfolio = () => {
+    const queryParams = parseQuery(window.location.search); // Get query params from URL
+    console.log("Query Params:", queryParams);
+    const name = Object.keys(queryParams)[0] || "Unknown User"; // Gets the first key from the URL
+
     const pieChartData = [
         { name: "CMO", value: 27, color: "#8884d8" },
         { name: "CORPORATES", value: 60, color: "#82ca9d" },
@@ -103,10 +117,9 @@ const Portfolio = () => {
                 >
                     <CardContent>
                         <Typography variant="h4" sx={{ fontWeight: "bold", marginTop: 1 }}>
-                            Roshan Mehta's Portfolio
+                            {name}'s Portfolio
                         </Typography>
                         <Typography>
-                            roshan.mehta@utexas.edu - 936-224-2564
                         </Typography>
                     </CardContent>
                 </Card>
