@@ -58,7 +58,7 @@ export default function Sidebar() {
       getInvestors();
     }
     setPortfolios(mostActive);
-  })
+  }, [])
 
   return (
     <Box
