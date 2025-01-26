@@ -1,24 +1,65 @@
-// Sidebar.js
 import React from "react";
+import { Box, Typography, List, ListItem, ListItemText, Divider } from "@mui/material";
 
-const Sidebar = () => {
+const mostActive = [
+  { ticker: "RGTI", name: "Rigetti Computing", price: 13.20, change: "+1.58", percent: "+13.60%" },
+  { ticker: "NVDA", name: "NVIDIA Corporation", price: 142.62, change: "-6.62", percent: "-4.44%" },
+  { ticker: "LCID", name: "Lucid Group, Inc.", price: 2.79, change: "+0.07", percent: "+2.57%" },
+  { ticker: "PLTR", name: "Palantir Technologies", price: 78.98, change: "+2.54", percent: "+3.32%" },
+  { ticker: "BBD", name: "Banco Bradesco", price: 1.93, change: "-0.01", percent: "-0.52%" },
+];
+
+export default function Sidebar() {
   return (
-    <div style={{ width: '250px', backgroundColor: '#f0f0f0', padding: '10px' }}>
-      <h3 style={{ fontWeight: '600', fontSize: '18px', marginBottom: '20px' }}>Recently Viewed</h3>
-      <ul style={{ listStyleType: 'none', padding: '0' }}>
-        <li style={{ marginBottom: '10px' }}><strong>HIT-USD</strong>: 0.00000344 (+2.14%)</li>
-        <li style={{ marginBottom: '10px' }}><strong>CARZ</strong>: 60.65 (+0.56%)</li>
-        <li style={{ marginBottom: '10px' }}><strong>DIA</strong>: 444.12 (-0.28%)</li>
-        <li style={{ marginBottom: '10px' }}><strong>QQQ</strong>: 529.63 (-0.60%)</li>
-        <li style={{ marginBottom: '10px' }}><strong>VFINX</strong>: 563.46 (-0.28%)</li>
-        <li style={{ marginBottom: '10px' }}><strong>AIG</strong>: 73.78 (-1.10%)</li>
-        <li style={{ marginBottom: '10px' }}><strong>NET</strong>: 125.12 (+0.96%)</li>
-        <li style={{ marginBottom: '10px' }}><strong>GSHD</strong>: 100.87 (-0.96%)</li>
-        <li style={{ marginBottom: '10px' }}><strong>BRK-B</strong>: 463.19 (+0.73%)</li>
-        <li style={{ marginBottom: '10px' }}><strong>BK</strong>: 85.79 (+1.25%)</li>
-      </ul>
-    </div>
-  );
-};
+    <Box
+      sx={{
+        width: "30%",
+        padding: 2,
+        paddingTop: 10,
+        borderRight: "1px solid #e0e0e0",
+      }}
+    >
 
-export default Sidebar;
+      {/* Most Active Section */}
+      <Typography variant="h6" gutterBottom>
+        Portfolios
+      </Typography>
+      <Divider sx={{ mt: 2}} />
+      <List>
+        {mostActive.map((item, index) => (
+          <ListItem
+            key={index}
+            sx={{
+              display: "flex",
+              justifyContent: "space-between",
+              padding: "8px 0",
+              "&:hover": {
+                backgroundColor: "#f4f6f8",
+                borderRadius: 1,
+              },
+            }}
+          >
+            <Box>
+              <Typography variant="body1" fontWeight="bold">
+                {item.ticker}
+              </Typography>
+              <Typography variant="caption" color="text.secondary">
+                {item.name}
+              </Typography>
+            </Box>
+            <Box textAlign="right">
+              <Typography variant="body1">${item.price.toFixed(2)}</Typography>
+              <Typography
+                variant="caption"
+                color={item.change.startsWith("+") ? "green" : "red"}
+              >
+                {item.change} ({item.percent})
+              </Typography>
+            </Box>
+          </ListItem>
+        ))}
+      </List>
+      <Divider sx={{ mb: 2 }} />
+    </Box>
+  );
+}
