@@ -75,7 +75,9 @@ const Portfolio = () => {
         <Box
             sx={{
                 backgroundColor: "#f9f9f9",
-                padding: 3,
+                paddingTop: 10,
+                paddingX: 2,
+                paddingBottom: 2,
                 width: "100hw",
                 overflow: "hidden", // Prevent unwanted scrollbars
             }}
@@ -87,7 +89,6 @@ const Portfolio = () => {
                     justifyContent: "space-between",
                     gap: 2, // Spacing between cards
                     flexWrap: "wrap",
-                    paddingTop: 10,
                 }}
             >
                 <Card

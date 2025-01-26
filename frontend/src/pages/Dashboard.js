@@ -15,78 +15,129 @@ import {
 import Sidebar from "../components/Sidebar";
 import { LineChart } from "@mui/x-charts";
 import { PieChart, Pie, Cell, ResponsiveContainer } from "recharts";
-import { useLocation } from "react-router-dom"; // Import useLocation hook
+import { useLocation, useNavigate } from "react-router-dom"; // Import useLocation hook
 
 export default function Dashboard() {
-  const [news, setNews] = useState([]);
+  // const [news, setNews] = useState([]);
+  const navigate = useNavigate();
   const [alerts, setAlerts] = useState([
     {
       portfolio: "High Risk",
       alert: "Significant loss this week",
-      data: [30, 20, 50],
+      portfolio_id: 35,
     },
     {
       portfolio: "High Risk",
       alert: "Significant loss this week",
-      data: [25, 50, 25],
+      portfolio_id: 35,
     },
     {
       portfolio: "High Risk",
       alert: "Significant loss this week",
-      data: [20, 60, 30],
+      portfolio_id: 35,
     },
     {
       portfolio: "High Risk",
       alert: "Significant loss this week",
-      data: [40, 30, 30],
+      portfolio_id: 35,
     },
     {
       portfolio: "Tech Growth",
       alert: "High volatility detected",
-      data: [50, 25, 25],
+      portfolio_id: 35,
     },
     {
       portfolio: "Dividend Income",
       alert: "Potential rebalancing needed",
-      data: [20, 40, 40],
+      portfolio_id: 35,
     },
   ]);
   const [selectedData, setSelectedData] = useState(alerts[0].data);
   const [advisorId, setAdvisorId] = useState(null);
 
   const location = useLocation(); // Get the current location object
+  const news = [
+    {
+      title: "Canada tariffs would hurt automakers and consumers: Report",
+      source: "Yahoo Finance",
+      time: "34 minutes ago",
+      tickers: [
+        { symbol: "AA", performance: "+0.21%" },
+        { symbol: "GM", performance: "-0.57%" },
+      ],
+      summary: "Canada tariffs would hurt automakers and consumers.",
+      image: require("../assets/finadvisor.png"),
+    },
+    {
+      title: "Canada tariffs would hurt automakers and consumers: Report",
+      source: "Yahoo Finance",
+      time: "34 minutes ago",
+      tickers: [
+        { symbol: "AA", performance: "+0.21%" },
+        { symbol: "GM", performance: "-0.57%" },
+      ],
+      summary: "Canada tariffs would hurt automakers and consumers.",
+      image: require("../assets/finadvisor.png"),
+    },
+    {
+      title:
+        "Report: White House in talks to have Oracle, investors control TikTok",
+      source: "Reuters",
+      time: "1 hour ago",
+      tickers: [{ symbol: "ORCL", performance: "-1.54%" }],
+      summary: "TikTok negotiations escalate with new investors.",
+      image: require("../assets/finadvisor.png"),
+    },
+    {
+      title:
+        "Report: White House in talks to have Oracle, investors control TikTok",
+      source: "Reuters",
+      time: "1 hour ago",
+      tickers: [{ symbol: "ORCL", performance: "-1.54%" }],
+      summary: "TikTok negotiations escalate with new investors.",
+      image: require("../assets/finadvisor.png"),
+    },
+    {
+      title:
+        "Report: White House in talks to have Oracle, investors control TikTok",
+      source: "Reuters",
+      time: "1 hour ago",
+      tickers: [{ symbol: "ORCL", performance: "-1.54%" }],
+      summary: "TikTok negotiations escalate with new investors.",
+      image: require("../assets/finadvisor.png"),
+    },
+  ];
+  // useEffect(() => {
+  //   // Extract advisorId from URL query params (handle format like ?10)
+  //   const searchParams = location.search;
+  //   const id = searchParams.replace('?', ''); // Get the value after the '?' character
+  //   setAdvisorId(id);
 
-  useEffect(() => {
-    // Extract advisorId from URL query params (handle format like ?10)
-    const searchParams = location.search;
-    const id = searchParams.replace('?', ''); // Get the value after the '?' character
-    setAdvisorId(id);
-    console.log("Advisor ID:", id);
+  //   // Fetch news data if advisorId is present
+  //   if (id) {
+  //     const fetchNews = async () => {
+  //       try {
+  //         console.log("Fetching news data...");
+  //         const response = await fetch(`http://localhost:5001/advisors/${id}/news`);
+  //         console.log("Response:", response);
+  //         if (!response.ok) {
+  //           throw new Error("Failed to fetch news data");
+  //         }
+  //         const data = await response.json();
+  //         console.log("News data fetched:", data);
+  //         setNews(data);
+  //       } catch (error) {
+  //         console.error("Error fetching news:", error);
+  //       }
+  //     };
 
-    // Fetch news data if advisorId is present
-    if (id) {
-      const fetchNews = async () => {
-        try {
-          console.log("Fetching news data...");
-          const response = await fetch(`http://localhost:5001/advisors/${id}/news`);
-          console.log("Response:", response);
-          if (!response.ok) {
-            throw new Error("Failed to fetch news data");
-          }
-          const data = await response.json();
-          console.log("News data fetched:", data);
-          setNews(data);
-        } catch (error) {
-          console.error("Error fetching news:", error);
-        }
-      };
-
-      fetchNews();
-    }
-  }, [location.search]); // Depend on location.search to rerun on URL change
+  //     fetchNews();
+  //   }
+  // }, [location.search]); // Depend on location.search to rerun on URL change
 
   const handleRowClick = (data) => {
     setSelectedData(data);
+    navigate(`/portfolio?${data}`);
   };
 
   return (
@@ -219,7 +270,7 @@ export default function Dashboard() {
                   {alerts.map((alert, index) => (
                     <TableRow
                       key={index}
-                      onClick={() => handleRowClick(alert.data)}
+                      onClick={() => handleRowClick(alert.portfolio_id)}
                       sx={{
                         cursor: "pointer",
                         "&:hover": { backgroundColor: "#f0f0f0" },
