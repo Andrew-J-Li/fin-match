@@ -130,6 +130,14 @@ app.get("/advisors/:advisorId/news", async (req, res) => {
   const advisorId = req.params.advisorId;
 
   try {
+    // Check if advisr has any clients/portfolios
+    const checkClientsQuery = "SELECT 1 FROM portfolios WHERE advisor_id = $1 LIMIT 1";
+    const checkClientsResult = await client.query(checkClientsQuery, [advisorId]);
+
+    if (checkClientsResult.rowCount === 0) {
+      return res.status(404).send("No clients found for this advisor.");
+    }
+
     const advisorTickersResult = await client.query(
       "SELECT DISTINCT stock_ticker FROM portfolios WHERE advisor_id = $1",
       [advisorId]
