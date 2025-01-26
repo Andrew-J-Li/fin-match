@@ -201,6 +201,7 @@ function formatArticle(advisorId, entry) {
   };
 }
 
+// Helper function to get sentiment score for a portfolio
 async function updateAffectedScores(advisorId, tickers) {
   for (const [ticker, sentimentScore] of Object.entries(tickers)) {
     try {
@@ -230,6 +231,31 @@ async function updateAffectedScores(advisorId, tickers) {
     }
   }
 }
+
+// Fetches the clients with the top 5 affected scores for all of their portfolios
+// Fetches the clients with the top 5 total affected scores for all of their portfolios under a specific advisor
+app.get("/advisors/:advisorId/alerts", async (req, res) => {
+  const advisorId = req.params.advisorId;
+
+  try {
+    const query = `
+      SELECT c.client_name, c.contact_info, SUM(p.affected_score) AS total_affected_score
+      FROM clients c
+      JOIN portfolios p ON c.client_id = p.client_id
+      WHERE p.advisor_id = $1
+      GROUP BY c.client_id
+      ORDER BY total_affected_score DESC
+      LIMIT 5
+    `;
+
+    const result = await client.query(query, [advisorId]);
+    const alerts = result.rows;
+
+    res.json(alerts);
+  } catch (err) {
+    res.status(500).send("Error fetching alerts");
+  }
+});
 
 // Start the server
 const PORT = process.env.PORT || 5001;

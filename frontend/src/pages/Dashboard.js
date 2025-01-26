@@ -135,6 +135,29 @@ export default function Dashboard() {
   //   }
   // }, [location.search]); // Depend on location.search to rerun on URL change
 
+  // update alerts based on highest affected score client
+  useEffect(() => {
+    const fetchAlerts = async () => {
+      try {
+        const response = await fetch(
+          `http://localhost:5001/advisors/${advisorId}/alerts`
+        );
+        if (!response.ok) {
+          throw new Error("Failed to fetch alerts");
+        }
+        const data = await response.json();
+        setAlerts(data);
+        setSelectedData(data[0].data);
+      } catch (error) {
+        console.error("Error fetching alerts:", error);
+      }
+    };
+
+    if (advisorId) {
+      fetchAlerts();
+    }
+  }, [advisorId]);
+
   const handleRowClick = (data) => {
     setSelectedData(data);
     navigate(`/portfolio?${data}`);
@@ -262,7 +285,7 @@ export default function Dashboard() {
               <Table>
                 <TableHead>
                   <TableRow>
-                    <TableCell>Portfolio</TableCell>
+                    <TableCell>Client</TableCell>
                     <TableCell>Alert</TableCell>
                   </TableRow>
                 </TableHead>
