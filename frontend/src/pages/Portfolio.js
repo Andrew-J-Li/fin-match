@@ -75,9 +75,7 @@ const Portfolio = () => {
         <Box
             sx={{
                 backgroundColor: "#f9f9f9",
-                paddingTop: 10,
-                paddingX: 2,
-                paddingBottom: 2,
+                padding: 3,
                 width: "100hw",
                 overflow: "hidden", // Prevent unwanted scrollbars
             }}
@@ -89,6 +87,7 @@ const Portfolio = () => {
                     justifyContent: "space-between",
                     gap: 2, // Spacing between cards
                     flexWrap: "wrap",
+                    paddingTop: 10,
                 }}
             >
                 <Card
@@ -113,54 +112,34 @@ const Portfolio = () => {
                 </Card>
             </Box>
             {/* Summary Cards */}
-            <Box
-                sx={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    gap: 2, // Spacing between cards
-                    flexWrap: "wrap",
-                    paddingTop: 2,
-                }}
-            >
-                {[
-                    {
-                        title: "Total Invested Amount",
-                        value: "$79,155,000,000",
-                        color: "primary",
-                    },
-                    {
-                        title: "Number of Investments",
-                        value: "2216",
-                        color: "secondary",
-                    },
-                    {
-                        title: "Rate of Return",
-                        value: "-4.16%",
-                        color: "error",
-                    },
-                ].map((card, index) => (
-                    <Card
-                        key={index}
-                        sx={{
-                            flex: "1 1 30%", // Cards take equal width and adjust to screen size
-                            minWidth: "250px",
-                            margin: "0 auto", // Center alignment
-                            height: "fit-content",
-                            borderRadius: 2,
-                            overflow: "hidden",
-                        }}
-                        variant="outlined"
-                    >
-                        <CardContent>
-                            <Typography color={card.color} sx={{ fontWeight: "bold" }}>
-                                {card.title}
-                            </Typography>
-                            <Typography variant="h5" sx={{ marginTop: 1 }}>
-                                {card.value}
-                            </Typography>
-                        </CardContent>
-                    </Card>
-                ))}
+            <Box     sx={{
+                border: "1px solid #e0e0e0", // Light gray border to match the theme
+                borderRadius: "8px", // Rounded corners
+                marginTop: "15px", // Spacing from the top
+            }}>
+            <div style={{ display: "flex", justifyContent: "center", paddingTop: "20px", paddingBottom: "20px" }}>
+
+                <div style={{ width: "33%", textAlign: "center" }}>
+                    <h2 style={{ fontWeight: "bold", backgroundImage: "linear-gradient(to right, #2A9D8F, rgb(64, 101, 180))", WebkitBackgroundClip: "text", color: "transparent", fontSize: "25px" }}>
+                    Total Investment Amount
+                    </h2>
+                    <h2>$79,375,138</h2>
+                </div>
+
+                <div style={{ width: "33%", textAlign: "center" }}>
+                    <h2 style={{ fontWeight: "bold", backgroundImage: "linear-gradient(to right,rgb(18, 53, 116), rgb(71, 29, 108))", WebkitBackgroundClip: "text", color: "transparent", fontSize: "25px" }}>
+                    Number of Investments
+                    </h2>
+                    <h2>213</h2>
+                </div>
+
+                <div style={{ width: "33%", textAlign: "center" }}>
+                    <h2 style={{ fontWeight: "bold", backgroundImage: "linear-gradient(to right,rgb(57, 17, 95), rgb(122, 36, 130))", WebkitBackgroundClip: "text", color: "transparent", fontSize: "25px" }}>
+                        Rate of Return
+                    </h2>
+                    <h2>5.34%</h2>
+                </div>
+            </div>
             </Box>
 
             {/* Charts */}

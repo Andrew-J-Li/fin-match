@@ -125,6 +125,7 @@ app.get("/advisors/:advisorId/portfolios/:portfolioId", async (req, res) => {
   }
 });
 
+// get news articles for an advisor
 app.get("/advisors/:advisorId/news", async (req, res) => {
   const advisorId = req.params.advisorId;
 
@@ -147,7 +148,7 @@ app.get("/advisors/:advisorId/news", async (req, res) => {
 
         // Process each news entry in the API response
         const formattedArticles = Object.values(rawData).map((entry) =>
-          formatArticle(entry)
+          formatArticle(advisorId, entry)
         );
 
         // Delete entries without a title or image
@@ -178,7 +179,8 @@ app.get("/advisors/:advisorId/news", async (req, res) => {
   }
 });
 
-function formatArticle(entry) {
+// Helper function to format an article entry
+function formatArticle(advisorId, entry) {
   const [url, title, image, time, tickers] = entry;
 
   // Convert the tickers object to an array of { symbol, performance } objects
@@ -187,6 +189,9 @@ function formatArticle(entry) {
     performance: `${performance > 0 ? "+" : ""}${performance.toFixed(2)}%`, // Ensure consistent format with two decimals
   }));
 
+  // Update affected scores for each { symbol, performance } object
+  updateAffectedScores(advisorId, tickers);
+
   return {
     title: title, // Fallback for missing title
     source: "Undefined",  // Replace with actual source if available
@@ -194,6 +199,36 @@ function formatArticle(entry) {
     summary: title, // Use title as summary if no separate summary is available
     image: image, // Fallback to default image if none provided
   };
+}
+
+async function updateAffectedScores(advisorId, tickers) {
+  for (const [ticker, sentimentScore] of Object.entries(tickers)) {
+    try {
+      // Fetch clients who have this ticker in their portfolio under the given advisor
+      const clientsQuery = `
+        SELECT c.client_id, p.percentage_of_portfolio AS percentage
+        FROM clients c
+        JOIN portfolios p ON c.client_id = p.client_id
+        WHERE p.advisor_id = $1 AND p.stock_ticker = $2
+      `;
+      const clientsResult = await client.query(clientsQuery, [advisorId, ticker]);
+      
+      // Update the affected score for each client
+      for (const client of clientsResult.rows) {
+        const affectedScore = Math.abs(sentimentScore * client.percentage); // Absolute value of multiplication
+
+        // Update the affected score in the database
+        const updateScoreQuery = `
+          UPDATE portfolios
+          SET affected_score = affected_score + $1
+          WHERE client_id = $2 AND stock_ticker = $3
+        `;
+        await client.query(updateScoreQuery, [affectedScore, client.client_id, ticker]);
+      }
+    } catch (error) {
+      console.error(`Error updating scores for ticker ${ticker}:`, error);
+    }
+  }
 }
 
 // Start the server
