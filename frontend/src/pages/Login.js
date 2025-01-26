@@ -3,7 +3,7 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 
 function Login() {
   const [isLogin, setIsLogin] = useState(true);
-  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [name, setName] = useState(""); // New state for name
@@ -24,13 +24,13 @@ function Login() {
       alert("Passwords do not match!");
       return;
     }
-    console.log({ name, username, password }); // Log name along with other fields
+    console.log({ name, email, password }); // Log name along with other fields
     fetch("http://localhost:5000/login", {
       method: "POST", // Use POST method
       headers: {
         "Content-Type": "application/json", // Specify JSON format
       },
-      body: JSON.stringify(requestBody), // Stringify the body
+      body: email, // Stringify the body
     })
       .then((response) => {
         if (!response.ok) {
@@ -184,13 +184,13 @@ function Login() {
           )}
 
           <div>
-            <label htmlFor="username" style={{ display: "none" }}>Username</label>
+            <label htmlFor="email" style={{ display: "none" }}>email</label>
             <input
               type="text"
-              id="username"
-              value={username}
+              id="email"
+              value={email}
               placeholder="Email"
-              onChange={(e) => setUsername(e.target.value)}
+              onChange={(e) => setEmail(e.target.value)}
               required
               style={inputStyle}
             />
