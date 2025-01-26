@@ -150,13 +150,46 @@ app.get("/advisors/:advisorId/portfolios/:portfolioId", async (req, res) => {
 app.get("/advisors/:advisorId/news", async (req, res) => {
   const advisorId = req.params.advisorId
 
-  const advisorTickers = await client.query(
-    "SELECT DISTINCT stock_ticker FROM portfolios WHERE advisor_id = $1",
-    [advisorId]
-  );
+  try {
+    const advisorTickersResult = await client.query(
+      "SELECT DISTINCT stock_ticker FROM portfolios WHERE advisor_id = $1",
+      [advisorId]
+    );
+  
+    const advisorTickers = advisorTickersResult.rows.map((row) => row.stock_ticker);
+  
+    const newsPromises = advisorTickers.map(async (ticker) => {
+      const response = await fetch(`https://oc20sapa11.execute-api.us-west-2.amazonaws.com/v1/news?symbol=${ticker}`);
+      if (!response.ok) {
+        throw new Error(`Failed to fetch news for ${ticker}`);
+      }
+      return response.json();
+    });
 
-  // 
+    const newsResponses = await Promise.all(newsPromises);
 
+  } catch {
+    res.status(500).send("Error fetching news articles");
+  }
+});
+
+function formatArticle(entry) {
+  const [url, title, image, time, tickers] = entry;
+
+  // Convert the tickers object to an array of { symbol, performance } objects
+  const tickersArray = Object.entries(tickers).map(([symbol, performance]) => ({
+    symbol,
+    performance: `${performance > 0 ? '+' : ''}${performance}%`,
+  }));
+
+  return {
+    title,
+    source: "Seeking Alpha",  // Adjust source name as needed
+    time: time,  // You might want to format or calculate relative time
+    tickers: tickersArray,
+    summary: title,  // Assuming summary is the same as the title, adjust as needed
+    image: image,  // Use the provided image URL
+  };
 }
 
 // Start the server
