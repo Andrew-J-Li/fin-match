@@ -52,11 +52,22 @@ export default function Dashboard() {
       total_affected_score: 65
     }
   ]);
+
+  const [notes, setNotes] = useState([]);
+  const [noteInput, setNoteInput] = useState("");
+
+  const handleAddNote = () => {
+    if (noteInput.trim() !== "") {
+      setNotes([...notes, noteInput]);
+      setNoteInput("");
+    }
+  };
+
   const [selectedData, setSelectedData] = useState(alerts[0].data);
   const [advisorId, setAdvisorId] = useState(null);
 
   const location = useLocation(); // Get the current location object
-  
+
   useEffect(() => {
     // Extract advisorId from URL query params (handle format like ?10)
     const searchParams = location.search;
@@ -319,16 +330,92 @@ export default function Dashboard() {
                 borderRadius: 2,
                 backgroundColor: "white",
                 padding: 2,
+                position: "relative",
+                overflow: "hidden",
               }}
             >
-              <Typography variant="h6">Additional Insights</Typography>
-              <Typography variant="body2" color="textSecondary">
-                Placeholder for additional information or charts.
+              <Typography variant="h6" gutterBottom>
+                Notes
               </Typography>
+              <ul
+                style={{
+                  listStyleType: "disc",
+                  paddingLeft: "20px",
+                  marginBottom: "16px",
+                  overflowY: "auto",
+                  maxHeight: "120px",
+                }}
+              >
+                {notes.map((note, index) => (
+                  <li
+                    key={index}
+                    style={{
+                      fontSize: "0.9rem",
+                      color: "#333",
+                      marginBottom: "8px",
+                      textAlign: "left",
+                    }}
+                  >
+                    {note}
+                  </li>
+                ))}
+              </ul>
+              <Box
+                sx={{
+                  position: "absolute", // Places the input and button section at the bottom
+                  bottom: 16, // Adjust distance from the bottom edge
+                  left: 16,
+                  right: 16, // Ensures the width respects the padding of the white box
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "8px",
+                }}
+              >
+                <input
+                  type="text"
+                  value={noteInput}
+                  placeholder="Type a Note..."
+                  onChange={(e) => setNoteInput(e.target.value)}
+                  style={{
+                    flexGrow: 1,
+                    padding: "10px 14px",
+                    border: "1px solid #cccccc",
+                    borderRadius: "8px",
+                    boxSizing: "border-box",
+                    fontFamily: "Inter, sans-serif",
+                    fontSize: "0.9rem",
+                  }}
+                />
+                <button
+                  onClick={handleAddNote}
+                  style={{
+                    padding: "10px 16px",
+                    backgroundColor: "#2A9D8F",
+                    color: "#ffffff",
+                    fontWeight: "bold",
+                    border: "none",
+                    borderRadius: "8px",
+                    cursor: "pointer",
+                    fontFamily: "Inter, sans-serif",
+                    fontSize: "0.9rem",
+                  }}
+                >
+                  Submit
+                </button>
+              </Box>
             </Box>
           </Box>
         </Box>
       </Box>
     </Box>
   );
+  const inputStyle = {
+    width: "100%",
+    padding: "12px 16px",
+    margin: "8px 0",
+    border: "1px solid #cccccc",
+    borderRadius: "8px",
+    boxSizing: "border-box",
+    fontFamily: "Inter, sans-serif",
+  };
 }
