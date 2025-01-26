@@ -14,7 +14,7 @@ import {
 } from "@mui/material";
 import Sidebar from "../components/Sidebar";
 import { LineChart } from "@mui/x-charts";
-import { PieChart, Pie, Cell, ResponsiveContainer } from "recharts";
+import { useNavigate } from 'react-router-dom';
 
 const news = [
   {
@@ -104,6 +104,8 @@ export default function Dashboard() {
   const handleRowClick = (data) => {
     setSelectedData(data);
   };
+
+  const navigate = useNavigate();
 
   return (
     <Box display="flex" height="100vh">
@@ -235,7 +237,7 @@ export default function Dashboard() {
                   {alerts.map((alert, index) => (
                     <TableRow
                       key={index}
-                      onClick={() => handleRowClick(alert.data)}
+                      onClick={() => navigate("/portfolio")}
                       sx={{
                         cursor: "pointer",
                         "&:hover": { backgroundColor: "#f0f0f0" },
