@@ -15,6 +15,7 @@ import {
 import Sidebar from "../components/Sidebar";
 import { LineChart } from "@mui/x-charts";
 import { PieChart, Pie, Cell, ResponsiveContainer } from "recharts";
+import { useLocation } from "react-router-dom"; // Import useLocation hook
 
 export default function Dashboard() {
   const [news, setNews] = useState([]);
@@ -53,10 +54,12 @@ export default function Dashboard() {
   const [selectedData, setSelectedData] = useState(alerts[0].data);
   const [advisorId, setAdvisorId] = useState(null);
 
+  const location = useLocation(); // Get the current location object
+
   useEffect(() => {
-    // Extract advisorId from URL query params
-    const urlParams = new URLSearchParams(window.location.search);
-    const id = urlParams.get('advisorId');
+    // Extract advisorId from URL query params (handle format like ?10)
+    const searchParams = location.search;
+    const id = searchParams.replace('?', ''); // Get the value after the '?' character
     setAdvisorId(id);
     console.log("Advisor ID:", id);
 
@@ -71,6 +74,7 @@ export default function Dashboard() {
             throw new Error("Failed to fetch news data");
           }
           const data = await response.json();
+          console.log("News data fetched:", data);
           setNews(data);
         } catch (error) {
           console.error("Error fetching news:", error);
@@ -79,7 +83,7 @@ export default function Dashboard() {
 
       fetchNews();
     }
-  }, []); // Empty dependency array to run only on mount
+  }, [location.search]); // Depend on location.search to rerun on URL change
 
   const handleRowClick = (data) => {
     setSelectedData(data);
@@ -179,6 +183,7 @@ export default function Dashboard() {
             </Card>
           ))}
         </Box>
+
         <Box
           display="flex"
           flex={0.6}
@@ -187,7 +192,6 @@ export default function Dashboard() {
           paddingTop={1}
           paddingBottom={2}
         >
-
           <Box
             sx={{
               width: "50%",
@@ -247,7 +251,6 @@ export default function Dashboard() {
                 display: "flex",
                 justifyContent: "space-evenly",
                 alignItems: "center",
-
               }}
             >
               <LineChart
