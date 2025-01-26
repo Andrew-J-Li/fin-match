@@ -74,6 +74,21 @@ const alerts = [
     data: [40, 30, 30],
   },
   {
+    portfolio: "High Risk",
+    alert: "Significant loss this week",
+    data: [40, 30, 30],
+  },
+  {
+    portfolio: "High Risk",
+    alert: "Significant loss this week",
+    data: [40, 30, 30],
+  },
+  {
+    portfolio: "High Risk",
+    alert: "Significant loss this week",
+    data: [40, 30, 30],
+  },
+  {
     portfolio: "Tech Growth",
     alert: "High volatility detected",
     data: [50, 25, 25],
@@ -125,7 +140,7 @@ export default function Dashboard() {
               backgroundColor: "white",
             }}
           >
-            <Typography variant="h5" gutterBottom>
+            <Typography variant="h6" gutterBottom>
               Portfolios Needing Attention
             </Typography>
             <TableContainer
@@ -221,7 +236,7 @@ export default function Dashboard() {
             gap: 2,
             paddingX:2,
             overflowX: "auto",
-            paddingBottom: 2,
+            paddingBottom: 0.5,
             "&::-webkit-scrollbar": {
               height: "8px",
               backgroundColor: "#f7fafc",

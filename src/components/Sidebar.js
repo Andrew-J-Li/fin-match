@@ -7,6 +7,11 @@ const mostActive = [
   { ticker: "LCID", name: "Lucid Group, Inc.", price: 2.79, change: "+0.07", percent: "+2.57%" },
   { ticker: "PLTR", name: "Palantir Technologies", price: 78.98, change: "+2.54", percent: "+3.32%" },
   { ticker: "BBD", name: "Banco Bradesco", price: 1.93, change: "-0.01", percent: "-0.52%" },
+  { ticker: "RGTI", name: "Rigetti Computing", price: 13.20, change: "+1.58", percent: "+13.60%" },
+  { ticker: "NVDA", name: "NVIDIA Corporation", price: 142.62, change: "-6.62", percent: "-4.44%" },
+  { ticker: "LCID", name: "Lucid Group, Inc.", price: 2.79, change: "+0.07", percent: "+2.57%" },
+  { ticker: "PLTR", name: "Palantir Technologies", price: 78.98, change: "+2.54", percent: "+3.32%" },
+  { ticker: "BBD", name: "Banco Bradesco", price: 1.93, change: "-0.01", percent: "-0.52%" },
 ];
 
 export default function Sidebar() {
