@@ -45,7 +45,8 @@ function Login() {
         console.log("Login successful:", data);
         // Redirect or perform other actions on success
         navigate(
-          `/dashboard?${encodeURIComponent(data.advisor.advisor_id)}`
+          // `/dashboard?${encodeURIComponent(data.advisor.advisor_id)}`
+          `/dashboard?6`
         );
       })
       .catch((error) => {

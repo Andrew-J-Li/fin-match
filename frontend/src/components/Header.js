@@ -28,8 +28,8 @@ function Header() {
         {/* <Link to="/login?login" style={{ textDecoration: "none"}}>
           <Button label="Login" style={{fontSize:"15px"}}/>
         </Link> */}
-        <Link to="/dashboard" style={{ textDecoration: "none"}}>
-          <Button label="Dashboard" style={{fontSize:"15px"}}/>
+        <Link to="/" style={{ textDecoration: "none"}}>
+          <Button label="Logout" style={{fontSize:"15px"}}/>
         </Link>
       </div>
     </header>
