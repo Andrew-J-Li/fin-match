@@ -28,7 +28,7 @@ function Login() {
 
     const data = isLogin ? { email } : { name, email }; // Use name in the data object
 
-    fetch("http://localhost:5000/login", {
+    fetch("http://localhost:5001/login", {
       method: "POST", // Use POST method
       headers: {
         "Content-Type": "application/json", // Specify JSON format

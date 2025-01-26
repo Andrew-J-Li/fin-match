@@ -68,7 +68,7 @@ export default function Dashboard() {
       const fetchNews = async () => {
         try {
           console.log("Fetching news data...");
-          const response = await fetch(`http://localhost:5000/advisors/${id}/portfolios`);
+          const response = await fetch(`http://localhost:5001/advisors/${id}/news`);
           console.log("Response:", response);
           if (!response.ok) {
             throw new Error("Failed to fetch news data");
