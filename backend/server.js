@@ -8,7 +8,7 @@ const client = require('./db');
 app.use(cors());
 
 // Middleware to parse JSON request bodies
-app.use(express.json());
+app.use(express.json()); 
 
 // Define a route to test the database connection
 app.get('/test', (req, res) => {
@@ -16,15 +16,42 @@ app.get('/test', (req, res) => {
 });
 
 // login
-app.post("/login", (req, res) => {
-  const { email } = req.body;
-  client
-    .query("SELECT * FROM advisors WHERE email = $1", [email])
-    .then((result) => {
+app.post("/login", async (req, res) => {
+  const { name, email } = req.body;
+
+  try {
+    if (name) {
+      // If name is provided, it's a registration
+      // Insert the new advisor into the database
+      const result = await client.query(
+        "INSERT INTO advisors (name, email) VALUES ($1, $2) RETURNING *",
+        [name, email]
+      );
+
       const advisor = result.rows[0];
-      res.json({advisor})
-    })
-    .catch((err) => res.status(500).send(err));
+
+      // Respond with the newly registered advisor's details
+      return res.status(201).json({ advisor });
+    } else {
+      // If name is not provided, it's a login
+      // Query the database to check if the advisor exists by email
+      const result = await client.query(
+        "SELECT * FROM advisors WHERE email = $1",
+        [email]
+      );
+
+      const advisor = result.rows[0];
+
+      if (!advisor) {
+        return res.status(400).send("Advisor not found");
+      }
+
+      // Respond with the advisor's details
+      return res.json({ advisor });
+    }
+  } catch (err) {
+    res.status(500).send("Error during login/registration: " + err);
+  }
 });
 
 // get portfolios
