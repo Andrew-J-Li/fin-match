@@ -25,7 +25,33 @@ function Login() {
       return;
     }
     console.log({ name, username, password }); // Log name along with other fields
-    navigate("/dashboard");
+    fetch("http://localhost:5000/login", {
+      method: "POST", // Use POST method
+      headers: {
+        "Content-Type": "application/json", // Specify JSON format
+      },
+      body: JSON.stringify(requestBody), // Stringify the body
+    })
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Failed to log in");
+        }
+        return response.json(); // Parse the response JSON
+      })
+      .then((data) => {
+        console.log("Login successful:", data);
+        // Redirect or perform other actions on success
+        navigate(
+          `/dashboard?name=${encodeURIComponent(data.aid)}`
+        );
+      })
+      .catch((error) => {
+        console.error("Error during login:", error);
+        alert("Login failed, please try again.");
+      });
+
+
+    // navigate("/dashboard");
   };
 
   const containerStyle = {
