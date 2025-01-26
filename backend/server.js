@@ -103,6 +103,19 @@ app.get("/advisors/:advisorId/portfolios/:portfolioId", async (req, res) => {
   }
 });
 
+// get news articles
+app.get("/advisors/:advisorId/news", async (req, res) => {
+  const advisorId = req.params.advisorId
+
+  const advisorTickers = await client.query(
+    "SELECT DISTINCT stock_ticker FROM portfolios WHERE advisor_id = $1",
+    [advisorId]
+  );
+
+  // 
+
+}
+
 // const AWS = require("aws-sdk");
 // const lambda = new AWS.Lambda();
 
