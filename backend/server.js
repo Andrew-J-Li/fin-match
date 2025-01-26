@@ -150,7 +150,12 @@ app.get("/advisors/:advisorId/news", async (req, res) => {
           formatArticle(entry)
         );
 
-        return formattedArticles;
+        // Delete entries without a title or image
+        const filteredArticles = formattedArticles.filter((article) => {
+          return article.title && article.image;
+        });
+
+        return filteredArticles;
       } catch (error) {
         console.error(`Error fetching or formatting news for ticker ${ticker}:`, error);
         return []; // Return an empty array for failed requests
@@ -184,7 +189,7 @@ function formatArticle(entry) {
 
   return {
     title: title, // Fallback for missing title
-    source: "Seeking Alpha",  // Replace with actual source if available
+    source: "Undefined",  // Replace with actual source if available
     tickers: tickersArray,
     summary: title, // Use title as summary if no separate summary is available
     image: image, // Fallback to default image if none provided

@@ -160,7 +160,7 @@ export default function Dashboard() {
                   color="textSecondary"
                   display="block"
                 >
-                  {item.source} • {item.time}
+                  {/* {item.source} • {item.time} */}
                 </Typography>
                 <Box sx={{ display: "flex", gap: 1, marginTop: 1 }}>
                   {item.tickers.map((ticker, idx) => (
