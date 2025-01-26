@@ -23,8 +23,8 @@ export default function Dashboard() {
   const [alerts, setAlerts] = useState([
     {
       client_id: 1,
-      client_name: "John Doe",
-      contact_info: "john.doe@example.com",
+      client_name: "John Smith",
+      contact_info: "john.smith@example.com",
       total_affected_score: 120
     },
     {
@@ -250,23 +250,39 @@ export default function Dashboard() {
                   <TableRow>
                     <TableCell>Client</TableCell>
                     <TableCell>Alert</TableCell>
+                    <TableCell>Attention Score</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {alerts.map((alert, index) => (
-                    <TableRow
-                      key={index}
-                      onClick={() => handleRowClick(alert.client_id)}
-                      sx={{
-                        cursor: "pointer",
-                        "&:hover": { backgroundColor: "#f0f0f0" },
-                      }}
-                    >
-                      <TableCell>{alert.client_name}</TableCell>
-                      <TableCell>{alert.contact_info}</TableCell>
-                    </TableRow>
-                  ))}
+                  {alerts.map((alert, index) => {
+                    // Determine the priority level based on the total_affected_score
+                    let backgroundColor;
+                    if (alert.total_affected_score >= 100) {
+                      backgroundColor = "#ffe6e6"; // High priority - light red
+                    } else if (alert.total_affected_score >= 75) {
+                      backgroundColor = "#fff5e6"; // Medium priority - light orange
+                    } else {
+                      backgroundColor = "#e6ffe6"; // Low priority - light green
+                    }
+
+                    return (
+                      <TableRow
+                        key={index}
+                        onClick={() => handleRowClick(alert.client_name)}
+                        sx={{
+                          cursor: "pointer",
+                          backgroundColor: backgroundColor, // Apply the background color
+                          "&:hover": { backgroundColor: "#f0f0f0" }, // Lighter shade on hover
+                        }}
+                      >
+                        <TableCell>{alert.client_name}</TableCell>
+                        <TableCell>{alert.contact_info}</TableCell>
+                        <TableCell>{alert.total_affected_score}</TableCell>
+                      </TableRow>
+                    );
+                  })}
                 </TableBody>
+
               </Table>
             </TableContainer>
           </Box>
