@@ -37,27 +37,6 @@ app.get('/fetch-news', async (req, res) => {
     }
 });
 
-// Test Function to check fetch-news and log the result
-async function testFetchNews() {
-    const stockSymbol = 'GOOG'; // You can replace with any symbol you want to test
-    try {
-        // Call the fetch-news endpoint
-        const response = await fetch(`http://localhost:5000/fetch-news?symbol=${stockSymbol}`);
-        
-        if (!response.ok) {
-            throw new Error(`Failed to fetch data. Status: ${response.status}`);
-        }
-
-        const data = await response.json(); // Parse the JSON response
-        console.log('Fetch News Response:', data);  // Log the response data to the console
-    } catch (error) {
-        console.error('Error testing fetch-news endpoint:', error);
-    }
-}
-
-// Call the test function to check the API response
-testFetchNews();
-
 // login endpoint for registration/login
 app.post("/login", async (req, res) => {
   const { name, email } = req.body;
@@ -146,29 +125,50 @@ app.get("/advisors/:advisorId/portfolios/:portfolioId", async (req, res) => {
   }
 });
 
-// get news articles
 app.get("/advisors/:advisorId/news", async (req, res) => {
-  const advisorId = req.params.advisorId
+  const advisorId = req.params.advisorId;
 
   try {
     const advisorTickersResult = await client.query(
       "SELECT DISTINCT stock_ticker FROM portfolios WHERE advisor_id = $1",
       [advisorId]
     );
-  
+
     const advisorTickers = advisorTickersResult.rows.map((row) => row.stock_ticker);
-  
+
     const newsPromises = advisorTickers.map(async (ticker) => {
-      const response = await fetch(`https://oc20sapa11.execute-api.us-west-2.amazonaws.com/v1/news?symbol=${ticker}`);
-      if (!response.ok) {
-        throw new Error(`Failed to fetch news for ${ticker}`);
+      try {
+        const response = await fetch(`https://oc20sapa11.execute-api.us-west-2.amazonaws.com/v1/news?symbol=${ticker}`);
+        if (!response.ok) {
+          throw new Error(`Failed to fetch news for ${ticker}`);
+        }
+        const rawData = await response.json();
+        console.log("Raw data from API:", rawData);
+
+        // Process each news entry in the API response
+        const formattedArticles = Object.values(rawData).map((entry) =>
+          formatArticle(entry)
+        );
+
+        return formattedArticles;
+      } catch (error) {
+        console.error(`Error fetching or formatting news for ticker ${ticker}:`, error);
+        return []; // Return an empty array for failed requests
       }
-      return response.json();
     });
 
-    const newsResponses = await Promise.all(newsPromises);
+    // Flatten the results from all tickers and remove empty arrays
+    const newsResponses = (await Promise.all(newsPromises))
+      .flat()
+      .filter((response) => response !== null);
 
-  } catch {
+    if (newsResponses.length === 0) {
+      return res.status(404).send("No news articles found for this advisor.");
+    }
+
+    res.json(newsResponses);
+  } catch (err) {
+    console.error("Error fetching news articles:", err);
     res.status(500).send("Error fetching news articles");
   }
 });
@@ -177,18 +177,17 @@ function formatArticle(entry) {
   const [url, title, image, time, tickers] = entry;
 
   // Convert the tickers object to an array of { symbol, performance } objects
-  const tickersArray = Object.entries(tickers).map(([symbol, performance]) => ({
+  const tickersArray = Object.entries(tickers || {}).map(([symbol, performance]) => ({
     symbol,
-    performance: `${performance > 0 ? '+' : ''}${performance}%`,
+    performance: `${performance > 0 ? "+" : ""}${performance.toFixed(2)}%`, // Ensure consistent format with two decimals
   }));
 
   return {
-    title,
-    source: "Seeking Alpha",  // Adjust source name as needed
-    time: time,  // You might want to format or calculate relative time
+    title: title, // Fallback for missing title
+    source: "Seeking Alpha",  // Replace with actual source if available
     tickers: tickersArray,
-    summary: title,  // Assuming summary is the same as the title, adjust as needed
-    image: image,  // Use the provided image URL
+    summary: title, // Use title as summary if no separate summary is available
+    image: image, // Fallback to default image if none provided
   };
 }
 

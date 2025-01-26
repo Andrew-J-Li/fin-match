@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Box,
   Card,
@@ -14,98 +14,76 @@ import {
 } from "@mui/material";
 import Sidebar from "../components/Sidebar";
 import { LineChart } from "@mui/x-charts";
-import { useNavigate } from 'react-router-dom';
-
-const news = [
-  {
-    title: "Canada tariffs would hurt automakers and consumers: Report",
-    source: "Yahoo Finance",
-    time: "34 minutes ago",
-    tickers: [
-      { symbol: "AA", performance: "+0.21%" },
-      { symbol: "GM", performance: "-0.57%" },
-    ],
-    summary: "Canada tariffs would hurt automakers and consumers.",
-    image: require("../assets/finadvisor.png"),
-  },
-  {
-    title: "Canada tariffs would hurt automakers and consumers: Report",
-    source: "Yahoo Finance",
-    time: "34 minutes ago",
-    tickers: [
-      { symbol: "AA", performance: "+0.21%" },
-      { symbol: "GM", performance: "-0.57%" },
-    ],
-    summary: "Canada tariffs would hurt automakers and consumers.",
-    image: require("../assets/finadvisor.png"),
-  },
-  {
-    title: "Report: White House in talks to have Oracle, investors control TikTok",
-    source: "Reuters",
-    time: "1 hour ago",
-    tickers: [{ symbol: "ORCL", performance: "-1.54%" }],
-    summary: "TikTok negotiations escalate with new investors.",
-    image: require("../assets/finadvisor.png"),
-  },
-  {
-    title: "Report: White House in talks to have Oracle, investors control TikTok",
-    source: "Reuters",
-    time: "1 hour ago",
-    tickers: [{ symbol: "ORCL", performance: "-1.54%" }],
-    summary: "TikTok negotiations escalate with new investors.",
-    image: require("../assets/finadvisor.png"),
-  },
-  {
-    title: "Report: White House in talks to have Oracle, investors control TikTok",
-    source: "Reuters",
-    time: "1 hour ago",
-    tickers: [{ symbol: "ORCL", performance: "-1.54%" }],
-    summary: "TikTok negotiations escalate with new investors.",
-    image: require("../assets/finadvisor.png"),
-  },
-];
-
-const alerts = [
-  {
-    portfolio: "High Risk",
-    alert: "Significant loss this week",
-    data: [30, 20, 50],
-  },
-  {
-    portfolio: "High Risk",
-    alert: "Significant loss this week",
-    data: [25, 50, 25],
-  },
-  {
-    portfolio: "High Risk",
-    alert: "Significant loss this week",
-    data: [20, 60, 30],
-  },
-  {
-    portfolio: "High Risk",
-    alert: "Significant loss this week",
-    data: [40, 30, 30],
-  },
-  {
-    portfolio: "Tech Growth",
-    alert: "High volatility detected",
-    data: [50, 25, 25],
-  },
-  {
-    portfolio: "Dividend Income",
-    alert: "Potential rebalancing needed",
-    data: [20, 40, 40],
-  },
-];
+import { PieChart, Pie, Cell, ResponsiveContainer } from "recharts";
 
 export default function Dashboard() {
+  const [news, setNews] = useState([]);
+  const [alerts, setAlerts] = useState([
+    {
+      portfolio: "High Risk",
+      alert: "Significant loss this week",
+      data: [30, 20, 50],
+    },
+    {
+      portfolio: "High Risk",
+      alert: "Significant loss this week",
+      data: [25, 50, 25],
+    },
+    {
+      portfolio: "High Risk",
+      alert: "Significant loss this week",
+      data: [20, 60, 30],
+    },
+    {
+      portfolio: "High Risk",
+      alert: "Significant loss this week",
+      data: [40, 30, 30],
+    },
+    {
+      portfolio: "Tech Growth",
+      alert: "High volatility detected",
+      data: [50, 25, 25],
+    },
+    {
+      portfolio: "Dividend Income",
+      alert: "Potential rebalancing needed",
+      data: [20, 40, 40],
+    },
+  ]);
   const [selectedData, setSelectedData] = useState(alerts[0].data);
+  const [advisorId, setAdvisorId] = useState(null);
+
+  useEffect(() => {
+    // Extract advisorId from URL query params
+    const urlParams = new URLSearchParams(window.location.search);
+    const id = urlParams.get('advisorId');
+    setAdvisorId(id);
+    console.log("Advisor ID:", id);
+
+    // Fetch news data if advisorId is present
+    if (id) {
+      const fetchNews = async () => {
+        try {
+          console.log("Fetching news data...");
+          const response = await fetch(`http://localhost:5000/advisors/${id}/portfolios`);
+          console.log("Response:", response);
+          if (!response.ok) {
+            throw new Error("Failed to fetch news data");
+          }
+          const data = await response.json();
+          setNews(data);
+        } catch (error) {
+          console.error("Error fetching news:", error);
+        }
+      };
+
+      fetchNews();
+    }
+  }, []); // Empty dependency array to run only on mount
 
   const handleRowClick = (data) => {
     setSelectedData(data);
   };
-
-  const navigate = useNavigate();
 
   return (
     <Box display="flex" height="100vh">
@@ -237,7 +215,7 @@ export default function Dashboard() {
                   {alerts.map((alert, index) => (
                     <TableRow
                       key={index}
-                      onClick={() => navigate("/portfolio")}
+                      onClick={() => handleRowClick(alert.data)}
                       sx={{
                         cursor: "pointer",
                         "&:hover": { backgroundColor: "#f0f0f0" },
@@ -280,13 +258,11 @@ export default function Dashboard() {
                 yAxis={[{
                   label: "Performance"
                 }]}
-                series={[
-                  {
-                    data: [2, 5.5, 2, 8.5, 1.5, 5],
-                    curve: "linear",
-                    showMark: false
-                  },
-                ]}
+                series={[{
+                  data: [2, 5.5, 2, 8.5, 1.5, 5],
+                  curve: "linear",
+                  showMark: false
+                }]}
                 width={250}
                 height={200}
               />
@@ -298,13 +274,11 @@ export default function Dashboard() {
                 yAxis={[{
                   label: "Performance"
                 }]}
-                series={[
-                  {
-                    data: [2, 5.5, 2, 8.5, 1.5, 5],
-                    curve: "linear",
-                    showMark: false
-                  },
-                ]}
+                series={[{
+                  data: [2, 5.5, 2, 8.5, 1.5, 5],
+                  curve: "linear",
+                  showMark: false
+                }]}
                 width={250}
                 height={200}
               />
