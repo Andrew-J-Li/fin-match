@@ -18,124 +18,74 @@ import { PieChart, Pie, Cell, ResponsiveContainer } from "recharts";
 import { useLocation, useNavigate } from "react-router-dom"; // Import useLocation hook
 
 export default function Dashboard() {
-  // const [news, setNews] = useState([]);
+  const [news, setNews] = useState([]);
   const navigate = useNavigate();
   const [alerts, setAlerts] = useState([
     {
-      portfolio: "High Risk",
-      alert: "Significant loss this week",
-      portfolio_id: 35,
+      client_id: 1,
+      client_name: "John Doe",
+      contact_info: "john.doe@example.com",
+      total_affected_score: 120
     },
     {
-      portfolio: "High Risk",
-      alert: "Significant loss this week",
-      portfolio_id: 35,
+      client_id: 2,
+      client_name: "Jane Smith",
+      contact_info: "jane.smith@example.com",
+      total_affected_score: 95
     },
     {
-      portfolio: "High Risk",
-      alert: "Significant loss this week",
-      portfolio_id: 35,
+      client_id: 3,
+      client_name: "Alice Johnson",
+      contact_info: "alice.johnson@example.com",
+      total_affected_score: 85
     },
     {
-      portfolio: "High Risk",
-      alert: "Significant loss this week",
-      portfolio_id: 35,
+      client_id: 4,
+      client_name: "Bob Brown",
+      contact_info: "bob.brown@example.com",
+      total_affected_score: 70
     },
     {
-      portfolio: "Tech Growth",
-      alert: "High volatility detected",
-      portfolio_id: 35,
-    },
-    {
-      portfolio: "Dividend Income",
-      alert: "Potential rebalancing needed",
-      portfolio_id: 35,
-    },
+      client_id: 5,
+      client_name: "Charlie Davis",
+      contact_info: "charlie.davis@example.com",
+      total_affected_score: 65
+    }
   ]);
   const [selectedData, setSelectedData] = useState(alerts[0].data);
   const [advisorId, setAdvisorId] = useState(null);
 
   const location = useLocation(); // Get the current location object
-  const news = [
-    {
-      title: "Canada tariffs would hurt automakers and consumers: Report",
-      source: "Yahoo Finance",
-      time: "34 minutes ago",
-      tickers: [
-        { symbol: "AA", performance: "+0.21%" },
-        { symbol: "GM", performance: "-0.57%" },
-      ],
-      summary: "Canada tariffs would hurt automakers and consumers.",
-      image: require("../assets/finadvisor.png"),
-    },
-    {
-      title: "Canada tariffs would hurt automakers and consumers: Report",
-      source: "Yahoo Finance",
-      time: "34 minutes ago",
-      tickers: [
-        { symbol: "AA", performance: "+0.21%" },
-        { symbol: "GM", performance: "-0.57%" },
-      ],
-      summary: "Canada tariffs would hurt automakers and consumers.",
-      image: require("../assets/finadvisor.png"),
-    },
-    {
-      title:
-        "Report: White House in talks to have Oracle, investors control TikTok",
-      source: "Reuters",
-      time: "1 hour ago",
-      tickers: [{ symbol: "ORCL", performance: "-1.54%" }],
-      summary: "TikTok negotiations escalate with new investors.",
-      image: require("../assets/finadvisor.png"),
-    },
-    {
-      title:
-        "Report: White House in talks to have Oracle, investors control TikTok",
-      source: "Reuters",
-      time: "1 hour ago",
-      tickers: [{ symbol: "ORCL", performance: "-1.54%" }],
-      summary: "TikTok negotiations escalate with new investors.",
-      image: require("../assets/finadvisor.png"),
-    },
-    {
-      title:
-        "Report: White House in talks to have Oracle, investors control TikTok",
-      source: "Reuters",
-      time: "1 hour ago",
-      tickers: [{ symbol: "ORCL", performance: "-1.54%" }],
-      summary: "TikTok negotiations escalate with new investors.",
-      image: require("../assets/finadvisor.png"),
-    },
-  ];
-  // useEffect(() => {
-  //   // Extract advisorId from URL query params (handle format like ?10)
-  //   const searchParams = location.search;
-  //   const id = searchParams.replace('?', ''); // Get the value after the '?' character
-  //   setAdvisorId(id);
+  
+  useEffect(() => {
+    // Extract advisorId from URL query params (handle format like ?10)
+    const searchParams = location.search;
+    const id = searchParams.replace('?', ''); // Get the value after the '?' character
+    setAdvisorId(id);
 
-  //   // Fetch news data if advisorId is present
-  //   if (id) {
-  //     const fetchNews = async () => {
-  //       try {
-  //         console.log("Fetching news data...");
-  //         const response = await fetch(`http://localhost:5001/advisors/${id}/news`);
-  //         console.log("Response:", response);
-  //         if (!response.ok) {
-  //           throw new Error("Failed to fetch news data");
-  //         }
-  //         const data = await response.json();
-  //         console.log("News data fetched:", data);
-  //         setNews(data);
-  //       } catch (error) {
-  //         console.error("Error fetching news:", error);
-  //       }
-  //     };
+    // Fetch news data if advisorId is present
+    if (id) {
+      const fetchNews = async () => {
+        try {
+          console.log("Fetching news data...");
+          const response = await fetch(`http://localhost:5001/advisors/${id}/news`);
+          console.log("Response:", response);
+          if (!response.ok) {
+            throw new Error("Failed to fetch news data");
+          }
+          const data = await response.json();
+          console.log("News data fetched:", data);
+          setNews(data);
+        } catch (error) {
+          console.error("Error fetching news:", error);
+        }
+      };
 
-  //     fetchNews();
-  //   }
-  // }, [location.search]); // Depend on location.search to rerun on URL change
+      fetchNews();
+    }
+  }, [location.search]); // Depend on location.search to rerun on URL change
 
-  // update alerts based on highest affected score client
+  // update alerts based on highest affected score client when the page loads
   useEffect(() => {
     const fetchAlerts = async () => {
       try {
@@ -147,7 +97,7 @@ export default function Dashboard() {
         }
         const data = await response.json();
         setAlerts(data);
-        setSelectedData(data[0].data);
+        setSelectedData(data[0]);
       } catch (error) {
         console.error("Error fetching alerts:", error);
       }
@@ -293,14 +243,14 @@ export default function Dashboard() {
                   {alerts.map((alert, index) => (
                     <TableRow
                       key={index}
-                      onClick={() => handleRowClick(alert.portfolio_id)}
+                      onClick={() => handleRowClick(alert.client_id)}
                       sx={{
                         cursor: "pointer",
                         "&:hover": { backgroundColor: "#f0f0f0" },
                       }}
                     >
-                      <TableCell>{alert.portfolio}</TableCell>
-                      <TableCell>{alert.alert}</TableCell>
+                      <TableCell>{alert.client_name}</TableCell>
+                      <TableCell>{alert.contact_info}</TableCell>
                     </TableRow>
                   ))}
                 </TableBody>

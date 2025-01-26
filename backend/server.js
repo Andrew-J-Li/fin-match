@@ -179,7 +179,6 @@ app.get("/advisors/:advisorId/news", async (req, res) => {
           throw new Error(`Failed to fetch news for ${ticker}`);
         }
         const rawData = await response.json();
-        console.log("Raw data from API:", rawData);
 
         // Process each news entry in the API response
         const formattedArticles = Object.values(rawData).map((entry) =>
@@ -190,6 +189,10 @@ app.get("/advisors/:advisorId/news", async (req, res) => {
         const filteredArticles = formattedArticles.filter((article) => {
           return article.title && article.image;
         });
+
+        // Update the affected scores for the tickers in the portfolio
+        const entries = Object.values(rawData);
+        await updateAffectedScores(advisorId, entries);
 
         return filteredArticles;
       } catch (error) {
@@ -224,9 +227,6 @@ function formatArticle(advisorId, entry) {
     performance: `${performance > 0 ? "+" : ""}${performance.toFixed(2)}%`, // Ensure consistent format with two decimals
   }));
 
-  // Update affected scores for each { symbol, performance } object
-  updateAffectedScores(advisorId, tickers);
-
   return {
     title: title, // Fallback for missing title
     source: "Undefined",  // Replace with actual source if available
@@ -237,7 +237,23 @@ function formatArticle(advisorId, entry) {
 }
 
 // Helper function to get sentiment score for a portfolio
-async function updateAffectedScores(advisorId, tickers) {
+async function updateAffectedScores(advisorId, entries) {
+  const tickers = {};
+
+  // Aggregate tickers and their sentiment scores
+  entries.forEach((entry) => {
+    const [url, title, image, time, tickersData] = entry;
+    Object.entries(tickersData).forEach(([symbol, performance]) => {
+      if (!tickers[symbol]) {
+        // add to list  
+        tickers[symbol] = performance;
+      } else {
+        // add to existing
+        tickers[symbol] += performance;
+      }
+    });
+  });
+
   for (const [ticker, sentimentScore] of Object.entries(tickers)) {
     try {
       // Fetch clients who have this ticker in their portfolio under the given advisor
@@ -274,7 +290,7 @@ app.get("/advisors/:advisorId/alerts", async (req, res) => {
 
   try {
     const query = `
-      SELECT c.client_name, c.contact_info, SUM(p.affected_score) AS total_affected_score
+      SELECT c.client_id, c.client_name, c.contact_info, SUM(p.affected_score) AS total_affected_score
       FROM clients c
       JOIN portfolios p ON c.client_id = p.client_id
       WHERE p.advisor_id = $1
