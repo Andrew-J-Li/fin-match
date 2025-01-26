@@ -7,7 +7,7 @@ const client = require('./db'); // Assuming you have a 'db' module for database 
 app.use(cors());
 
 // Middleware to parse JSON request bodies
-app.use(express.json()); 
+app.use(express.json());
 
 // Define a route to test the database connection
 app.get('/test', (req, res) => {
@@ -16,25 +16,25 @@ app.get('/test', (req, res) => {
 
 // Route to make a request to the AWS API
 app.get('/fetch-news', async (req, res) => {
-    const stockSymbol = req.query.symbol || 'GOOG'; // Default to 'GOOG' if no symbol is provided
+  const stockSymbol = req.query.symbol || 'GOOG'; // Default to 'GOOG' if no symbol is provided
 
-    try {
-        // Make the GET request using fetch
-        const response = await fetch(`https://oc20sapa11.execute-api.us-west-2.amazonaws.com/v1/news?symbol=${stockSymbol}`);
+  try {
+    // Make the GET request using fetch
+    const response = await fetch(`https://oc20sapa11.execute-api.us-west-2.amazonaws.com/v1/news?symbol=${stockSymbol}`);
 
-        if (!response.ok) {
-            throw new Error(`HTTP error! Status: ${response.status}`);
-        }
-
-        const data = await response.json(); // Parse the response as JSON
-        
-        // Send the response data back to the client
-        res.json(data);
-    } catch (error) {
-        // Handle error
-        console.error('Error fetching news:', error);
-        res.status(500).json({ error: 'Failed to fetch news' });
+    if (!response.ok) {
+      throw new Error(`HTTP error! Status: ${response.status}`);
     }
+
+    const data = await response.json(); // Parse the response as JSON
+
+    // Send the response data back to the client
+    res.json(data);
+  } catch (error) {
+    // Handle error
+    console.error('Error fetching news:', error);
+    res.status(500).json({ error: 'Failed to fetch news' });
+  }
 });
 
 // login endpoint for registration/login
@@ -103,6 +103,41 @@ app.get("/advisors/:advisorId/portfolios", async (req, res) => {
     res.json(portfoliosWithSentiment);
   } catch (err) {
     res.status(500).send("Error fetching portfolios");
+  }
+});
+
+// get portfolios for specific advisor
+app.get("/advisors/:advisorId/investors", async (req, res) => {
+  const advisorId = req.params.advisorId;
+
+  // Step 1: Query the database for portfolios
+  const portfoliosQuery = "SELECT * FROM portfolios WHERE advisor_id = $1";
+  try {
+    const portfoliosResult = await client.query(portfoliosQuery, [advisorId]);
+    const portfolios = portfoliosResult.rows;
+
+    res.json(portfolios);
+  } catch (err) {
+    res.status(500).send("Error fetching portfolios");
+  }
+});
+
+// get client names
+app.get("/clientName/:portfolioId", async (req, res) => {
+  const { portfolioId } = req.params;
+  const query = `
+    SELECT c.client_name
+    FROM portfolios p
+    JOIN clients c ON p.client_id = c.client_id
+    WHERE p.portfolio_id = $1;
+  `;
+
+  try {
+    const result = await client.query(query, [portfolioId]);
+    const portfolio = result.rows;
+    res.json(portfolio);
+  } catch (err) {
+    res.status(500).send("Error fetching portfolio details");
   }
 });
 
@@ -213,7 +248,7 @@ async function updateAffectedScores(advisorId, tickers) {
         WHERE p.advisor_id = $1 AND p.stock_ticker = $2
       `;
       const clientsResult = await client.query(clientsQuery, [advisorId, ticker]);
-      
+
       // Update the affected score for each client
       for (const client of clientsResult.rows) {
         const affectedScore = Math.abs(sentimentScore * client.percentage); // Absolute value of multiplication

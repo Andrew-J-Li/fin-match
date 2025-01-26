@@ -1,21 +1,65 @@
-import React from "react";
-import { Link } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { useLocation, Link } from "react-router-dom";
 import { Box, Typography, List, ListItem, ListItemText, Divider } from "@mui/material";
 
 const mostActive = [
-  { ticker: "John's Portfolio", name: "$1,000,000", price: 25, change: "+1.58", percent: "+13.60%" },
-  { ticker: "NVDA", name: "NVIDIA Corporation", price: 142.62, change: "-6.62", percent: "-4.44%" },
-  { ticker: "LCID", name: "Lucid Group, Inc.", price: 2.79, change: "+0.07", percent: "+2.57%" },
-  { ticker: "PLTR", name: "Palantir Technologies", price: 78.98, change: "+2.54", percent: "+3.32%" },
-  { ticker: "BBD", name: "Banco Bradesco", price: 1.93, change: "-0.01", percent: "-0.52%" },
-  { ticker: "RGTI", name: "Rigetti Computing", price: 13.20, change: "+1.58", percent: "+13.60%" },
-  { ticker: "NVDA", name: "NVIDIA Corporation", price: 142.62, change: "-6.62", percent: "-4.44%" },
-  { ticker: "LCID", name: "Lucid Group, Inc.", price: 2.79, change: "+0.07", percent: "+2.57%" },
-  { ticker: "PLTR", name: "Palantir Technologies", price: 78.98, change: "+2.54", percent: "+3.32%" },
-  { ticker: "BBD", name: "Banco Bradesco", price: 1.93, change: "-0.01", percent: "-0.52%" },
+  { name: "John Smith", value: "1000000", score: 25, },
+  { name: "Jane Doe", value: "1000000", score: 142.62, },
+  { name: "Michael Johnson", value: "1000000", score: 2.79, },
+  { name: "Emily Davis", value: "1000000", score: 78.98, },
+  { name: "David Brown", value: "1000000", score: 1.93, },
+  { name: "Sarah Miller", value: "1000000", score: 13.20, },
+  { name: "James Wilson", value: "1000000", score: 142.62, },
+  { name: "Jessica Taylor", value: "1000000", score: 2.79, },
+  { name: "Robert Anderson", value: "1000000", score: 78.98, },
+  { name: "Laura Thompson", value: "1000000", score: 1.93, },
 ];
 
 export default function Sidebar() {
+
+  const [advisorId, setAdvisorId] = useState(null);
+  const [portfolios, setPortfolios] = useState(null);
+  const location = useLocation();
+
+  useEffect(() => {
+    const searchParams = location.search;
+    const id = searchParams.replace('?', ''); // Get the value after the '?' character
+    setAdvisorId(id);
+
+    if (id) {
+      const getInvestors = async () => {
+        try {
+          const response = await fetch(`http://localhost:5001/advisors/${id}/investors`);
+          console.log("here");
+          console.log("Response:", response);
+          if (!response.ok) {
+            throw new Error("Failed to fetch news data");
+          }
+          const data = await response.json();
+          console.log("News data fetched:", data);
+
+          for (let i = 0; i < data.length; i++) {
+            if (i % 2 == 0) {
+              mostActive[i / 2]["value"] = data[i]["amount_invested"];
+              mostActive[i / 2]["score"] = parseFloat(data[i]["affected_score"]);
+              const res = await fetch(`http://localhost:5001/clientName/${data[i]["portfolio_id"]}`);
+              const name = await res.json();
+              mostActive[i / 2]["name"] = name[0]["client_name"];
+            } else {
+              mostActive[(i - 1) / 2]["value"] = data[i]["amount_invested"];
+              mostActive[(i - 1) / 2]["score"] = (mostActive[(i - 1) / 2]["score"] + parseFloat(data[i]["affected_score"])) / 2;
+            }
+          }
+        } catch (error) {
+          console.error("Error fetching news:", error);
+        }
+      };
+
+      getInvestors();
+    }
+    setPortfolios(mostActive);
+  })
+
   return (
     <Box
       sx={{
@@ -50,21 +94,15 @@ export default function Sidebar() {
             >
               <Box>
                 <Typography variant="body1" fontWeight="bold">
-                  {item.ticker}
+                  {item.name}
                 </Typography>
                 <Typography variant="caption" color="text.secondary">
-                  {item.name}
+                  {(parseFloat(item.value).toLocaleString('en-US', { style: 'currency', currency: 'USD' }))}
                 </Typography>
               </Box>
               <Box textAlign="right">
-                <Typography variant="body1">
-                  ${item.price.toFixed(2)}
-                </Typography>
-                <Typography
-                  variant="caption"
-                  color={item.change.startsWith("+") ? "green" : "red"}
-                >
-                  {item.change} ({item.percent})
+                <Typography variant="body1" color={item.score > 0 ? "green" : "red"}>
+                  {item.score.toFixed(2)}
                 </Typography>
               </Box>
             </ListItem>
