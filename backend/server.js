@@ -1,30 +1,100 @@
-// server.js
 const express = require('express');
 const cors = require("cors");
 const app = express();
-const client = require('./db');
+const client = require('./db'); // Assuming you have a 'db' module for database interactions
 
 // Use CORS middleware
 app.use(cors());
 
 // Middleware to parse JSON request bodies
-app.use(express.json());
+app.use(express.json()); 
 
 // Define a route to test the database connection
 app.get('/test', (req, res) => {
   res.send('Backend is running');
 });
 
-// login
-app.post("/login", (req, res) => {
-  const { email } = req.body;
-  client
-    .query("SELECT * FROM advisors WHERE email = $1", [email])
-    .then((result) => {
+// Route to make a request to the AWS API
+app.get('/fetch-news', async (req, res) => {
+    const stockSymbol = req.query.symbol || 'GOOG'; // Default to 'GOOG' if no symbol is provided
+
+    try {
+        // Make the GET request using fetch
+        const response = await fetch(`https://oc20sapa11.execute-api.us-west-2.amazonaws.com/v1/news?symbol=${stockSymbol}`);
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+
+        const data = await response.json(); // Parse the response as JSON
+        
+        // Send the response data back to the client
+        res.json(data);
+    } catch (error) {
+        // Handle error
+        console.error('Error fetching news:', error);
+        res.status(500).json({ error: 'Failed to fetch news' });
+    }
+});
+
+// Test Function to check fetch-news and log the result
+async function testFetchNews() {
+    const stockSymbol = 'GOOG'; // You can replace with any symbol you want to test
+    try {
+        // Call the fetch-news endpoint
+        const response = await fetch(`http://localhost:5000/fetch-news?symbol=${stockSymbol}`);
+        
+        if (!response.ok) {
+            throw new Error(`Failed to fetch data. Status: ${response.status}`);
+        }
+
+        const data = await response.json(); // Parse the JSON response
+        console.log('Fetch News Response:', data);  // Log the response data to the console
+    } catch (error) {
+        console.error('Error testing fetch-news endpoint:', error);
+    }
+}
+
+// Call the test function to check the API response
+testFetchNews();
+
+// login endpoint for registration/login
+app.post("/login", async (req, res) => {
+  const { name, email } = req.body;
+
+  try {
+    if (name) {
+      // If name is provided, it's a registration
+      // Insert the new advisor into the database
+      const result = await client.query(
+        "INSERT INTO advisors (name, email) VALUES ($1, $2) RETURNING *",
+        [name, email]
+      );
+
       const advisor = result.rows[0];
-      res.json({advisor})
-    })
-    .catch((err) => res.status(500).send(err));
+
+      // Respond with the newly registered advisor's details
+      return res.status(201).json({ advisor });
+    } else {
+      // If name is not provided, it's a login
+      // Query the database to check if the advisor exists by email
+      const result = await client.query(
+        "SELECT * FROM advisors WHERE email = $1",
+        [email]
+      );
+
+      const advisor = result.rows[0];
+
+      if (!advisor) {
+        return res.status(400).send("Advisor not found");
+      }
+
+      // Respond with the advisor's details
+      return res.json({ advisor });
+    }
+  } catch (err) {
+    res.status(500).send("Error during login/registration: " + err);
+  }
 });
 
 // get portfolios
@@ -76,53 +146,51 @@ app.get("/advisors/:advisorId/portfolios/:portfolioId", async (req, res) => {
   }
 });
 
-// const AWS = require("aws-sdk");
-// const lambda = new AWS.Lambda();
+// get news articles
+app.get("/advisors/:advisorId/news", async (req, res) => {
+  const advisorId = req.params.advisorId
 
-// // In-memory cache for storing sentiment scores
-// const sentimentCache = {};
+  try {
+    const advisorTickersResult = await client.query(
+      "SELECT DISTINCT stock_ticker FROM portfolios WHERE advisor_id = $1",
+      [advisorId]
+    );
+  
+    const advisorTickers = advisorTickersResult.rows.map((row) => row.stock_ticker);
+  
+    const newsPromises = advisorTickers.map(async (ticker) => {
+      const response = await fetch(`https://oc20sapa11.execute-api.us-west-2.amazonaws.com/v1/news?symbol=${ticker}`);
+      if (!response.ok) {
+        throw new Error(`Failed to fetch news for ${ticker}`);
+      }
+      return response.json();
+    });
 
-// /**
-//  * Get the sentiment score for a portfolio, using the cache if available.
-//  * @param {Object} portfolio - The portfolio object.
-//  * @returns {Promise<number>} - The sentiment score.
-//  */
-// async function getSentimentScore(portfolio) {
-//   const cacheKey = portfolio.stock_ticker; // Use stock ticker as the unique key
+    const newsResponses = await Promise.all(newsPromises);
 
-//   // Check if the sentiment score is already in the cache
-//   if (sentimentCache[cacheKey]) {
-//     console.log(`Cache hit for ${cacheKey}`);
-//     return sentimentCache[cacheKey];
-//   }
+  } catch {
+    res.status(500).send("Error fetching news articles");
+  }
+});
 
-//   console.log(`Cache miss for ${cacheKey}, invoking Lambda...`);
+function formatArticle(entry) {
+  const [url, title, image, time, tickers] = entry;
 
-//   const payload = JSON.stringify({ 
-//     stock_name: portfolio.stock_name, 
-//     stock_ticker: portfolio.stock_ticker 
-//   });
+  // Convert the tickers object to an array of { symbol, performance } objects
+  const tickersArray = Object.entries(tickers).map(([symbol, performance]) => ({
+    symbol,
+    performance: `${performance > 0 ? '+' : ''}${performance}%`,
+  }));
 
-//   const params = {
-//     FunctionName: 'SentimentAnalysisFunction', // Your Lambda function name
-//     InvocationType: 'RequestResponse',
-//     Payload: payload
-//   };
-
-//   try {
-//     // Invoke AWS Lambda
-//     const data = await lambda.invoke(params).promise();
-//     const result = JSON.parse(data.Payload);
-
-//     // Store the result in the cache
-//     sentimentCache[cacheKey] = result.sentiment_score;
-
-//     return result.sentiment_score;
-//   } catch (error) {
-//     console.error(`Error invoking Lambda for ${cacheKey}:`, error);
-//     throw error;
-//   }
-// }
+  return {
+    title,
+    source: "Seeking Alpha",  // Adjust source name as needed
+    time: time,  // You might want to format or calculate relative time
+    tickers: tickersArray,
+    summary: title,  // Assuming summary is the same as the title, adjust as needed
+    image: image,  // Use the provided image URL
+  };
+}
 
 // Start the server
 const PORT = process.env.PORT || 5000;

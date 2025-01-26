@@ -25,12 +25,15 @@ function Login() {
       return;
     }
     console.log({ name, email, password }); // Log name along with other fields
+
+    const data = isLogin ? { email } : { name, email }; // Use name in the data object
+
     fetch("http://localhost:5000/login", {
       method: "POST", // Use POST method
       headers: {
         "Content-Type": "application/json", // Specify JSON format
       },
-      body: email, // Stringify the body
+      body: JSON.stringify(data), // Send data as JSON string
     })
       .then((response) => {
         if (!response.ok) {
@@ -42,7 +45,7 @@ function Login() {
         console.log("Login successful:", data);
         // Redirect or perform other actions on success
         navigate(
-          `/dashboard?name=${encodeURIComponent(data.aid)}`
+          `/dashboard?${encodeURIComponent(data.advisor.advisor_id)}`
         );
       })
       .catch((error) => {
