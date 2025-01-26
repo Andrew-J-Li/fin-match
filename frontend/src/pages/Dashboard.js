@@ -140,71 +140,73 @@ export default function Dashboard() {
           }}
         >
           {news.map((item, index) => (
-            <Card
-              key={index}
-              sx={{
-                width: 280,
-                height: "fit-content",
-                borderRadius: 2,
-                overflow: "hidden",
-                flexShrink: 0,
-              }}
-              variant="outlined"
-            >
-              <Box
+            <a href={item.source} target="_blank" rel="noopener noreferrer" key={index}>
+              <Card
                 sx={{
-                  position: "relative",
-                  height: "120px",
-                  backgroundImage: `url(${item.image})`,
-                  backgroundSize: "cover",
-                  backgroundPosition: "center",
+                  width: 280,
+                  height: "fit-content",
+                  borderRadius: 2,
+                  overflow: "hidden",
+                  flexShrink: 0,
+                  textDecoration: "none", // Remove underline
+                  "&:hover": { cursor: "pointer" }, // Add pointer cursor on hover
                 }}
+                variant="outlined"
               >
                 <Box
                   sx={{
-                    position: "absolute",
-                    top: 0,
-                    left: 0,
-                    right: 0,
-                    backgroundColor: "rgba(0, 0, 0, 0.6)",
-                    padding: 1,
-                    color: "white",
-                    fontSize: "0.9rem",
+                    position: "relative",
+                    height: "120px",
+                    backgroundImage: `url(${item.image})`,
+                    backgroundSize: "cover",
+                    backgroundPosition: "center",
                   }}
                 >
-                  {item.summary}
+                  <Box
+                    sx={{
+                      position: "absolute",
+                      top: 0,
+                      left: 0,
+                      right: 0,
+                      backgroundColor: "rgba(0, 0, 0, 0.6)",
+                      padding: 1,
+                      color: "white",
+                      fontSize: "0.9rem",
+                    }}
+                  >
+                    {item.summary}
+                  </Box>
                 </Box>
-              </Box>
-              <Box sx={{ padding: 1.5 }}>
-                <Typography variant="body2" fontWeight="bold" gutterBottom>
-                  {item.title}
-                </Typography>
-                <Typography
-                  variant="caption"
-                  color="textSecondary"
-                  display="block"
-                >
-                  {/* {item.source} • {item.time} */}
-                </Typography>
-                <Box sx={{ display: "flex", gap: 1, marginTop: 1 }}>
-                  {item.tickers.map((ticker, idx) => (
-                    <Chip
-                      key={idx}
-                      label={`${ticker.symbol} ${ticker.performance}`}
-                      size="small"
-                      sx={{
-                        backgroundColor: ticker.performance.startsWith("-")
-                          ? "#ffe6e6"
-                          : "#e6ffe6",
-                        color: ticker.performance.startsWith("-")
-                          ? "#d32f2f"
-                          : "#2e7d32",
-                      }}
-                    />
-                  ))}
+                <Box sx={{ padding: 1.5 }}>
+                  <Typography variant="body2" fontWeight="bold" gutterBottom>
+                    {item.title}
+                  </Typography>
+                  <Typography
+                    variant="caption"
+                    color="textSecondary"
+                    display="block"
+                  >
+                  </Typography>
+                  <Box sx={{ display: "flex", gap: 1, marginTop: 1 }}>
+                    {item.tickers.map((ticker, idx) => (
+                      <Chip
+                        key={idx}
+                        label={`${ticker.symbol}`}
+                        size="small"
+                        sx={{
+                          backgroundColor: ticker.performance.startsWith("-")
+                            ? "#ffe6e6"
+                            : "#e6ffe6",
+                          color: ticker.performance.startsWith("-")
+                            ? "#d32f2f"
+                            : "#2e7d32",
+                        }}
+                      />
+                    ))}
+                  </Box>
                 </Box>
-              </Box>
-            </Card>
+              </Card>
+            </a>
           ))}
         </Box>
 

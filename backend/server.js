@@ -237,7 +237,7 @@ function formatArticle(advisorId, entry) {
 
   return {
     title: title, // Fallback for missing title
-    source: "Undefined",  // Replace with actual source if available
+    source: url,  // Replace with actual source if available
     tickers: tickersArray,
     summary: title, // Use title as summary if no separate summary is available
     image: image, // Fallback to default image if none provided
@@ -283,6 +283,7 @@ async function updateAffectedScores(advisorId, entries) {
           SET affected_score = affected_score + $1
           WHERE client_id = $2 AND stock_ticker = $3
         `;
+        console.log(`Updating score for client ${client.client_id} and ticker ${ticker} by ${affectedScore}`);
         await client.query(updateScoreQuery, [affectedScore, client.client_id, ticker]);
       }
     } catch (error) {
